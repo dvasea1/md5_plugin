@@ -18,8 +18,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _md5SumPlugin = 'Unknown';
-  String _md5SumDart = 'Unknown';
+  String? _md5SumPlugin = 'Unknown';
+  String? _md5SumDart = 'Unknown';
 
   @override
   void initState() {
@@ -29,8 +29,8 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    String md5SumPlugin;
-    String md5SumDartCrypto;
+    String ? md5SumPlugin;
+    String? md5SumDartCrypto = '';
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       //Prepare image
@@ -46,14 +46,14 @@ class _MyAppState extends State<MyApp> {
       var date = DateTime.now();
       md5SumDartCrypto = await calculateMD5SumAsyncWithCrypto(dbPath);
       print('md5SumDartCrypto: $md5SumDartCrypto');
-      md5SumDartCrypto +=
+      if(md5SumDartCrypto != null)md5SumDartCrypto +=
           ' - duration: ${DateTime.now().difference(date).inMilliseconds}';
 
       //Get md5 sum from Plugin
       date = DateTime.now();
       md5SumPlugin = await calculateMD5SumAsyncWithPlugin(dbPath);
       print('md5SumPlugin: $md5SumPlugin');
-      md5SumPlugin +=
+     if(md5SumPlugin != null) md5SumPlugin +=
           ' - duration: ${DateTime.now().difference(date).inMilliseconds}';
     } on PlatformException {
       md5SumPlugin = 'Failed to get md5 from Plugin';
@@ -71,12 +71,12 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  Future<String> calculateMD5SumAsyncWithPlugin(String filePath) async {
+  Future<String?> calculateMD5SumAsyncWithPlugin(String filePath) async {
     var ret = '';
     var file = File(filePath);
     if (await file.exists()) {
       try {
-        ret = await Md5Plugin.getMD5WithPath(filePath);
+        ret = (await Md5Plugin.getMD5WithPath(filePath))!;
       } catch (exception) {
         print('Unable to evaluate the MD5 sum :$exception');
         return null;
@@ -88,7 +88,7 @@ class _MyAppState extends State<MyApp> {
     return ret;
   }
 
-  Future<String> calculateMD5SumAsyncWithCrypto(String filePath) async {
+  Future<String?> calculateMD5SumAsyncWithCrypto(String filePath) async {
     var ret = '';
     var file = File(filePath);
     if (await file.exists()) {
